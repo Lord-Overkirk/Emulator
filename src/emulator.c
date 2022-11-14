@@ -3,10 +3,9 @@
 
 #include "intel8080.h"
 
-int Disassemble8080Op(unsigned char* instr_buff, int pc, int* cntr) {
-    unsigned char *code = &instr_buff[pc];    
+int disassemble_8080_op(unsigned char* instr_buff, int pc) {
+    unsigned char *code = &instr_buff[pc];
     int instr_size = 1;
-    printf ("%04x ", pc);
 
     switch (*code) {
         case 0x00: printf("NOP"); break;
@@ -164,11 +163,34 @@ int Disassemble8080Op(unsigned char* instr_buff, int pc, int* cntr) {
         case 0xfb: printf("EI"); break;
         case 0xfe: printf("CPI\t#$%02x", code[1]); instr_size = 2; break;
 
-        default:printf("Not implemented"); *cntr = *cntr + 1; break;
+        default:printf("Not implemented"); break;
     }
 
     putchar('\n');
     return instr_size;
+}
+
+void instr_not_implemented(State8080* state) {
+    printf("Instruction not implemented:\t");
+    disassemble_8080_op(state->ram, state->pc);
+}
+
+void emulate_8080(State8080* state) {
+    unsigned char *opcode = &state->ram[state->pc];
+    printf("PC: %04x\t OP:%02x", state->pc, opcode[0]);
+    u_int8_t instr_size = 0;
+
+    switch (*opcode) {
+        case 0x00: printf("NOP\n"); instr_size = 1; break;
+        case 0xc3:
+            state->pc = (opcode[2] << 8) | opcode[1];
+            instr_size = 3;
+            break;
+
+        default: instr_not_implemented(state); break;
+    }
+
+    state->pc += instr_size;
 }
 
 /* Initialise ram, return amount of bytes written. */
@@ -187,7 +209,6 @@ unsigned int init_ram(State8080* state, const char* filename, unsigned int offse
 
     fclose(f);
 
-    printf("written %d bytes %x\n", fsize, &state->ram[offset-2]);
     return fsize;
 }
 
@@ -216,6 +237,9 @@ int main(int argc, char const *argv[]) {
         offset += init_ram(state, files[i], offset);
     }
 
+    for (int i = 0l; i < 10; i++) {
+        emulate_8080(state);
+    }
 
     free_state(state);
     return 0;
