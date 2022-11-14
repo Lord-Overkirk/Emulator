@@ -1,13 +1,14 @@
 #include <stdlib.h>
+#include <stdint.h>
 
-typedef struct ConditionCodes {
-    uint8_t    z:1;
-    uint8_t    s:1;
-    uint8_t    p:1;
-    uint8_t    cy:1;
-    uint8_t    ac:1;
+typedef struct condition_flags {
+    uint8_t    zero:1;
+    uint8_t    sign:1;
+    uint8_t    parity:1;
+    uint8_t    carry:1;
+    uint8_t    accumulator:1;
     uint8_t    pad:3;
-} ConditionCodes;    
+} condition_flags;    
 
 //    typedef struct State8080 {    
 //     uint8_t    a;    
@@ -29,6 +30,8 @@ typedef struct State8080 {
     uint16_t sp;
     uint8_t* ram;
 
+    uint8_t a;
+
     uint8_t b;
     uint8_t c;
 
@@ -40,4 +43,6 @@ typedef struct State8080 {
 
     uint8_t w;
     uint8_t z;
+
+    condition_flags cf;
 } State8080;

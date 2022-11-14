@@ -7,6 +7,8 @@ int disassemble_8080_op(unsigned char* instr_buff, int pc) {
     unsigned char *code = &instr_buff[pc];
     int instr_size = 1;
 
+    printf("%04x: ", pc);
+
     switch (*code) {
         case 0x00: printf("NOP"); break;
         case 0x01: printf("LXI\tB,%02x %02x", code[2], code[1]); instr_size = 3; break;
@@ -43,6 +45,7 @@ int disassemble_8080_op(unsigned char* instr_buff, int pc) {
 
         case 0x21: printf("LXI\tH,#$%02x%02x", code[2], code[1]); instr_size = 3; break;
         case 0x22: printf("SHLD\t%02x%02x", code[2], code[1]); instr_size = 3; break;
+        case 0x23: printf("INC\tHL"); instr_size = 1; break;
         case 0x27: printf("DAA"); break;
         case 0x2e: printf("MVI\tL,#%02x", code[1]); instr_size = 2; break;
 
@@ -145,6 +148,7 @@ int disassemble_8080_op(unsigned char* instr_buff, int pc) {
         case 0xc5: printf("PUSH\tB"); break;
         case 0xc6: printf("ADI\t#$%02x", code[1]); instr_size = 2; break;
         case 0xca: printf("JZ \t$%02x%02x", code[2], code[1]); instr_size = 3; break;
+        case 0xc9: printf("RET"); instr_size = 1; break;
         case 0xcb: printf("NOP"); break;
         case 0xcc: printf("CZ \t$%02x%02x", code[2], code[1]); instr_size = 3; break;
         case 0xcd: printf("CALL\t$%02x%02x", code[2], code[1]); instr_size = 3; break;
@@ -175,22 +179,103 @@ void instr_not_implemented(State8080* state) {
     disassemble_8080_op(state->ram, state->pc);
 }
 
+int parity_check(int x, int nbits) {
+    int parity = 0;
+
+    for (int i =0; i < nbits; i++) {
+        int sh_max = (1 << i);
+        if (x & sh_max) {
+            parity++;
+        }
+    }
+    return 0 == (parity & 0x1);
+}
+
 void emulate_8080(State8080* state) {
     unsigned char *opcode = &state->ram[state->pc];
-    printf("PC: %04x\t OP:%02x", state->pc, opcode[0]);
+    disassemble_8080_op(state->ram, state->pc);
     u_int8_t instr_size = 0;
+    uint16_t mem_location;
 
     switch (*opcode) {
-        case 0x00: printf("NOP\n"); instr_size = 1; break;
+        case 0x00: state->pc++; break;
+        case 0x05:
+            state->b--;
+            printf("b: %d\n", state->b);
+            state->cf.zero = (state->b == 0);
+            state->cf.sign = (0x80 == (state->b & 0x80));
+            state->cf.parity = parity_check(state->b, 8);
+            state->pc++;
+            break;
+        case 0x06:
+            state->pc += 2;
+            state->b = opcode[1];
+            break;
+        case 0x11:
+            state->d = opcode[2];
+            state->e = opcode[1];
+            state->pc += 3;
+            break;
+        case 0x13:
+            state->e++;
+            if (state->e == 0) {
+                state->d++;
+            }
+            state->pc++;
+            break;
+        case 0x1a:
+            mem_location = (state->d << 8) | state->e;
+            state->a = state->ram[mem_location];
+            state->pc++;
+            break;
+        case 0x21:
+            state->h = opcode[2];
+            state->l = opcode[1];
+            state->pc += 3;
+            break;
+        case 0x23:
+            state->l++;
+            if (state->l == 0) {
+                state->h++;
+            }
+            state->pc++;
+            break;
+        case 0x31:
+            state->pc += 3;
+            state->sp = (opcode[2] << 8) | opcode[1];
+            break;
+        case 0x77:
+            mem_location = (state->h << 8) | state->l;
+            state->ram[mem_location] = state->a;
+            state->pc++;
+            break;
+        case 0xc2:
+            if (state->cf.zero == 0) {
+                state->pc = (opcode[2] << 8) | opcode[1];
+            } else {
+                state->pc+=3;
+            }
+            break;
         case 0xc3:
             state->pc = (opcode[2] << 8) | opcode[1];
+            break;
+        case 0xc9:
+            state->pc = state->ram[state->sp+1] << 8 | state->ram[state->sp];
+            state->sp += 2;
+            break;
+        case 0xcd:
             instr_size = 3;
+            uint16_t ret_addr = state->pc + instr_size;
+            state->ram[state->sp-1] = (ret_addr >> 8) & 0xff;
+            state->ram[state->sp-2] = (ret_addr & 0xff);
+            state->sp -= 2;
+            state->pc = (opcode[2] << 8) | opcode[1];
             break;
 
         default: instr_not_implemented(state); break;
     }
 
-    state->pc += instr_size;
+    // state->pc += instr_size;
 }
 
 /* Initialise ram, return amount of bytes written. */
@@ -228,16 +313,17 @@ int main(int argc, char const *argv[]) {
     State8080* state = init_state();
 
     const char* files[] = {"src/invaders.h",
-                          "src/invaders.g",
-                          "src/invaders.f",
-                          "src/invaders.e"};
+                           "src/invaders.g",
+                           "src/invaders.f",
+                           "src/invaders.e"};
 
+    /* Load the binaries into memory */
     int offset = 0;
     for (int i = 0; i < 4; i++) {
         offset += init_ram(state, files[i], offset);
     }
 
-    for (int i = 0l; i < 10; i++) {
+    for (int i = 0; i < 1600; i++) {
         emulate_8080(state);
     }
 
