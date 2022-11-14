@@ -3,55 +3,6 @@
 Small emulator for the Intel 8080 cpu.
 Run `make` generate the executable
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style type="text/css" id="dark-mode-custom-style" lang="en"></style><style type="text/css" id="dark-mode-native-style" lang="en"></style><style type="text/css" id="dark-mode-native-sheet" lang="en"></style><head>
-	<title>Intel 8080 OPCODES</title>
-	<meta http-equiv="content-type" content="text/html; charset=windows-1250">
-	<style type="text/css"> <!--
-		table.withborder {
-			border-width: 1px;
-			border-style: solid;
-			border-color: black;
-			border-collapse: collapse;
-		}
-		td.withborder {
-			border-width: 1px;
-			border-style: solid;
-			border-color: black;
-			border-collapse: collapse;
-		}
-		a:link {
-			text-decoration: none;
-			color: #2018A0;
-		}
-		a:visited {
-			text-decoration: none;
-			color: #2018A0;
-		}
-		a:active {
-			text-decoration: none;
-			color: #2018A0;
-		}
-		a:hover {
-			text-decoration: none;
-			color: #4030FF;
-		}
-		sub {
-			font-size: 8pt;
-		}
-		sup {
-			font-size: 8pt;
-		}
-		hr {
-			height: 1px;
-			color: black;
-		}
-		--></style>
-</head>
-
-<body bgcolor="#dfdfdf">
-<span style="font-size: 150%"><b>Intel 8080 instruction set</b></span>
-<br><br>
 <table class="withborder" width="1200" cellspacing="0" cellpadding="0" bgcolor="#bfbfbf">
 	<tbody><tr style="font-family: monospace; font-size: 8pt" bgcolor="#9f9f9f" align="center"><td class="withborder">&nbsp;</td><td class="withborder" style="width: 7em"><b>&nbsp;x0&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x1&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x2&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x3&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x4&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x5&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x6&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x7&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x8&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;x9&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;xA&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;xB&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;xC&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;xD&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;xE&nbsp;</b></td><td class="withborder" style="width: 7em"><b>&nbsp;xF&nbsp;</b></td></tr>
 	<tr style="font-family: monospace; font-size: 8pt" align="center"><td class="withborder" bgcolor="#9f9f9f"><b>&nbsp;0x&nbsp;</b></td><td class="withborder" bgcolor="#ff99cc">NOP<br>1&nbsp;&nbsp;4<br>- - - - -</td><td class="withborder" bgcolor="#ccffcc">LXI B,d16<br>3&nbsp;&nbsp;10<br>- - - - -</td><td class="withborder" bgcolor="#ccccff">STAX B<br>1&nbsp;&nbsp;7<br>- - - - -</td><td class="withborder" bgcolor="#ffcccc">INX B<br>1&nbsp;&nbsp;5<br>- - - - -</td><td class="withborder" bgcolor="#ffff99">INR B<br>1&nbsp;&nbsp;5<br>S Z A P -</td><td class="withborder" bgcolor="#ffff99">DCR B<br>1&nbsp;&nbsp;5<br>S Z A P -</td><td class="withborder" bgcolor="#ccccff">MVI B,d8<br>2&nbsp;&nbsp;7<br>- - - - -</td><td class="withborder" bgcolor="#ffff99">RLC<br>1&nbsp;&nbsp;4<br>- - - - C</td><td class="withborder" bgcolor="#ff99cc">*NOP<br>1&nbsp;&nbsp;4<br>- - - - -</td><td class="withborder" bgcolor="#ffcccc">DAD B<br>1&nbsp;&nbsp;10<br>- - - - C</td><td class="withborder" bgcolor="#ccccff">LDAX B<br>1&nbsp;&nbsp;7<br>- - - - -</td><td class="withborder" bgcolor="#ffcccc">DCX B<br>1&nbsp;&nbsp;5<br>- - - - -</td><td class="withborder" bgcolor="#ffff99">INR C<br>1&nbsp;&nbsp;5<br>S Z A P -</td><td class="withborder" bgcolor="#ffff99">DCR C<br>1&nbsp;&nbsp;5<br>S Z A P -</td><td class="withborder" bgcolor="#ccccff">MVI C,d8<br>2&nbsp;&nbsp;7<br>- - - - -</td><td class="withborder" bgcolor="#ffff99">RRC<br>1&nbsp;&nbsp;4<br>- - - - C</td></tr>
