@@ -52,6 +52,7 @@ int disassemble_8080_op(unsigned char* instr_buff, int pc) {
         case 0x31: printf("LXI\tSP,#$%02x%02x", code[2], code[1]); instr_size = 3; break;
         case 0x32: printf("STA\t%02x%02x", code[2], code[1]); instr_size = 3; break;
         case 0x35: printf("DCR\tM"); break;
+        case 0x36: printf("MVI\tM,#$%02x", code[1]); instr_size = 3; break;
         case 0x3a: printf("LDA\t$%02x%02x", code[2], code[1]); instr_size = 3; break;
         case 0x3d: printf("DCR\tA"); break;
         case 0x3e: printf("MVI\tA,#%02x", code[1]); instr_size = 2; break;
@@ -244,9 +245,22 @@ void emulate_8080(State8080* state) {
             state->pc += 3;
             state->sp = (opcode[2] << 8) | opcode[1];
             break;
+        case 0x36:
+            mem_location = (state->h << 8) | state->l;
+            state->ram[mem_location] = opcode[1];
+            state->pc += 2;
+            break;
         case 0x77:
             mem_location = (state->h << 8) | state->l;
             state->ram[mem_location] = state->a;
+            state->pc++;
+            break;
+        case 0x7b:
+            state->a = state->e;
+            state->pc++;
+            break;
+        case 0x7c:
+            state->a = state->h;
             state->pc++;
             break;
         case 0xc2:
