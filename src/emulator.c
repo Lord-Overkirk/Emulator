@@ -179,6 +179,7 @@ void instr_not_implemented(State8080* state) {
     disassemble_8080_op(state->ram, state->pc);
 }
 
+/* Return the parity of a bitstring, even or odd. */
 int parity_check(int x, int nbits) {
     int parity = 0;
 
@@ -201,7 +202,6 @@ void emulate_8080(State8080* state) {
         case 0x00: state->pc++; break;
         case 0x05:
             state->b--;
-            printf("b: %d\n", state->b);
             state->cf.zero = (state->b == 0);
             state->cf.sign = (0x80 == (state->b & 0x80));
             state->cf.parity = parity_check(state->b, 8);
@@ -274,8 +274,6 @@ void emulate_8080(State8080* state) {
 
         default: instr_not_implemented(state); break;
     }
-
-    // state->pc += instr_size;
 }
 
 /* Initialise ram, return amount of bytes written. */
