@@ -285,6 +285,13 @@ void emulate_8080(State8080* state) {
             state->sp -= 2;
             state->pc = (opcode[2] << 8) | opcode[1];
             break;
+        case 0xfe:
+            state->cf.zero = (state->a - opcode[1]) == 0;
+            state->cf.sign = (0x80 == ((state->a - opcode[1]) & 0x80));
+            state->cf.parity = parity_check((state->a - opcode[1]), 8);
+            state->cf.carry = (state->a < opcode[1]);
+            state->pc += 2;
+            break;
 
         default: instr_not_implemented(state); break;
     }
